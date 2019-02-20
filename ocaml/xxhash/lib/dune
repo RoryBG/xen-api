@@ -1,0 +1,14 @@
+(rule
+	(targets xxhash_stubs.c xxhash_generated.ml)
+	(deps (:gen ../stubs/xxhash_stubgen.exe))
+	(action (run %{gen}))
+)
+
+(library
+	(name XXHash)
+	(libraries
+		ctypes
+		xxhash_bindings
+	)
+	(c_library_flags (-lxxhash))
+)
