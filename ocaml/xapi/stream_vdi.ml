@@ -349,7 +349,7 @@ let recv_all_vdi refresh_session ifd (__context:Context.t) rpc session_id ~has_i
   let recv_one ifd (__context:Context.t) (prefix, vdi_ref, size) =
     let vdi_skip_zeros = not (Sm_fs_ops.must_write_zeroes_into_new_vdi ~__context vdi_ref) in
     (* If this is true, we skip writing zeros. Only for sparse files (vhd only atm) *)
-    debug "begun import of VDI%s preserving sparseness" (if vdi_skip_zeros then "" else " NOT");
+    debug "begun import of VDI %s preserving sparseness" (if vdi_skip_zeros then "" else "NOT");
 
     with_open_vdi __context rpc session_id vdi_ref `RW [Unix.O_WRONLY] 0o644
       (fun ofd dom0_path ->
@@ -413,16 +413,16 @@ let recv_all_vdi refresh_session ifd (__context:Context.t) rpc session_id ~has_i
              let csum_hdr = Tar_unix.Header.get_next_header ifd in (* Header of the checksum file *)
              let csum_file_name = csum_hdr.Tar_unix.Header.file_name in
 	     	 
-	     	 let csum = (* Infer checksum algorithm from the file format *)
-			 	match Filename.extension csum_file_name with
-				| m when m = checksum_extension_xxh -> Printf.sprintf "%016LX" (XXHash.XXH64.hash buffer_string)
-				| m when m = checksum_extension_sha -> Sha1.to_hex (Sha1.string buffer_string)
-				| _ -> begin
-						let msg = Printf.sprintf "Found unsupported checksum file: %s" csum_file_name in
-						error "%s" msg;
-						raise (Failure msg)
-					end
-			 in
+             let csum = (* Infer checksum algorithm from the file extension *)
+                match Filename.extension csum_file_name with
+                | m when m = checksum_extension_xxh -> Printf.sprintf "%016LX" (XXHash.XXH64.hash buffer_string)
+                | m when m = checksum_extension_sha -> Sha1.to_hex (Sha1.string buffer_string)
+                | _ -> begin
+                    let msg = Printf.sprintf "Found unsupported checksum file: %s" csum_file_name in
+                    error "%s" msg;
+                    raise (Failure msg)
+                end
+             in
 
              checksum_table := (file_name, csum) :: !checksum_table;
 

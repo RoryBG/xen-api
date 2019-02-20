@@ -28,7 +28,6 @@ depends: [
   "rrdd-plugin"
   "sexpr"
   "sha"
-  "xxhash"
   "stdext"
   "stunnel"
   "tar"
