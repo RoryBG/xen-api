@@ -11,5 +11,6 @@
 		ctypes
 		xxhash_bindings
 	)
+	(c_flags (-lxxhash))
 	(c_library_flags (-lxxhash))
 )
